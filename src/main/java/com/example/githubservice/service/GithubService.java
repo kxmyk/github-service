@@ -1,11 +1,11 @@
 package com.example.githubservice.service;
 
+import com.example.githubservice.dto.BranchDto;
+import com.example.githubservice.dto.RepositoryDto;
 import com.example.githubservice.exception.GithubClientException;
 import com.example.githubservice.exception.UserNotFoundException;
-import com.example.githubservice.model.GithubRepo;
 import com.example.githubservice.model.GithubBranch;
-import com.example.githubservice.dto.RepositoryDto;
-import com.example.githubservice.dto.BranchDto;
+import com.example.githubservice.model.GithubRepo;
 import io.smallrye.mutiny.Uni;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -43,14 +43,11 @@ public class GithubService {
     }
 
     private Mono<List<BranchDto>> fetchBranches(GithubRepo repo) {
-        if (repo.branchesUrl() == null) {
-            return Mono.just(List.of());
-        }
-
         return webClient.get()
-                .uri(repo.branchesUrl().replace("{/branch}", ""))
+                .uri("/repos/{owner}/{repo}/branches", repo.owner().login(), repo.name())
                 .retrieve()
                 .bodyToFlux(GithubBranch.class)
+                .doOnNext(branch -> System.out.println("Fetched branch: " + branch.name()))
                 .map(branch -> new BranchDto(branch.name(), branch.commit().sha()))
                 .collectList();
     }
