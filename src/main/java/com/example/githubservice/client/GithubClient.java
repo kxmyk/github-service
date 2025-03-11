@@ -4,10 +4,12 @@ import com.example.githubservice.model.GithubBranch;
 import com.example.githubservice.model.GithubRepo;
 import com.example.githubservice.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Component
 public class GithubClient {
     private final WebClient webClient;
 
