@@ -19,8 +19,8 @@ public class GithubService {
 
     private final WebClient webClient;
 
-    public GithubService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://api.github.com").build();
+    public GithubService(WebClient githubWebClient) {
+        this.webClient = githubWebClient;
     }
 
     public Uni<List<RepositoryDto>> getRepositories(String username) {
@@ -47,7 +47,6 @@ public class GithubService {
                 .uri("/repos/{owner}/{repo}/branches", repo.owner().login(), repo.name())
                 .retrieve()
                 .bodyToFlux(GithubBranch.class)
-                .doOnNext(branch -> System.out.println("Fetched branch: " + branch.name()))
                 .map(branch -> new BranchDto(branch.name(), branch.commit().sha()))
                 .collectList();
     }
